@@ -23,9 +23,12 @@ def atlas_status():
                 paths = [os.path.join(root, filename)]
             else:
                 paths.append(os.path.join(root, filename))
-    print paths
-    print active_hour
-    return render_template("atlas_status.html")
+    payload = ""
+    for path in paths:
+        payload += sbd.message.MobileOriginatedMessage.read(path).payload
+    print payload
+    return render_template("atlas_status.html",
+            last_heartbeat_datetime=active_hour)
 
 
 if __name__ == "__main__":
