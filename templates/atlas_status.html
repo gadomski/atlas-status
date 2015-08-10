@@ -19,8 +19,39 @@
   </head>
   <body>
     <div class="container">
+      <h1>ATLAS status</h1>
+
       <div class="row">
-        <h1>ATLAS status</h1>
+
+        <div class="col-md-6">
+          <dl class="dl-horizontal">
+            <dt>Last heartbeat (UTC)</dt>
+            <dd>{{ last_heartbeat_datetime }}</dd>
+
+            <dt>Last scan (UTC)</dt>
+            <dd>{{ scan_start_starttime }}</dd>
+          </dl>
+
+          <h3>Environment at last heartbeat</h3>
+          <dl class="dl-horizontal">
+            <dt>External temperature</dt>
+            <dd>{{ "%.1f °C" | format(scan_params_temperature) }}</dd>
+
+            <dt>Internal temperature</dt>
+            <dd>{{ "%.1f °C" | format(tempmount) }}</dd>
+
+            <dt>Pressure</dt>
+            <dd>{{ "%.1f mBar" | format(scan_params_pressure) }}</dd>
+
+            <dt>Humidity</dt>
+            <dd>{{ "%.1f%%" | format(scan_params_humidity) }}</dd>
+          </dl>
+        </div>
+
+        <div class="col-md-6">
+          <img src="{{ last_image_src }}" class="img-responsive" alt="Latest ATLAS image">
+        </div>
+
       </div>
     </div>
 
