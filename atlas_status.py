@@ -71,27 +71,33 @@ def atlas_status():
             if os.path.splitext(filename)[1] != ".sbd":
                 continue
             dt = datetime.datetime.strptime(filename[0:13], "%y%m%d_%H%M%S")
-            if (dt - active_hour).seconds > 60 * 60:
-                active_hour = datetime.datetime(dt.year, dt.month, dt.day, dt.hour, 0, 0)
-                paths = [os.path.join(root, filename)]
+            if dt > active_hour:
+                if (dt - active_hour).seconds > 60 * 60:
+                    active_hour = datetime.datetime(dt.year, dt.month, dt.day, dt.hour, 0, 0)
+                    paths = [os.path.join(root, filename)]
+                else:
+                    paths.append(os.path.join(root, filename))
             else:
-                paths.append(os.path.join(root, filename))
+                pass
 
-    last_image_filename = glob.glob("/home/iridiumcam/StarDot/ATLAS_CAM/*.jpg")[-1]
+    last_image_filename = os.path.basename(
+            glob.glob("/home/iridiumcam/StarDot/ATLAS_CAM/*.jpg")[-1])
 
     payload = ""
+    paths.sort()
     for path in paths:
         payload += sbd.message.MobileOriginatedMessage.read(path).payload
     values = dict(zip(PAYLOAD_NAMES, payload.split(",")))
+    starttime = values["scan_start_starttime"].split("/")
+    values["scan_start_starttime"] = datetime.datetime.strptime(
+            "{0:02d}/{1}/{2}".format(int(starttime[0]) + 1, starttime[1], starttime[2]),
+            "%m/%d/%y %H:%M:%S")
+
     for key, value in values.iteritems():
         try:
             values[key] = float(value)
-        except ValueError:
+        except (ValueError, TypeError):
             pass
-    starttime = values["scan_start_starttime"].split("/")
-    values["scan_start_starttime"] = datetime.datetime.strptime(
-            "{:02d}/{}/{}".format(int(starttime[0]) + 1, starttime[1], starttime[2]),
-            "%m/%d/%y %H:%M:%S")
 
     values["last_heartbeat_datetime"] = active_hour
     values["last_image_src"] = "http://iridiumcam.lidar.io/ATLAS_CAM/" + last_image_filename
@@ -100,4 +106,4 @@ def atlas_status():
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(host="0.0.0.0")
