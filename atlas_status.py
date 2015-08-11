@@ -1,10 +1,13 @@
 import datetime
 import glob
 import os
+import StringIO
 
-from flask import Flask, render_template
+from flask import Flask, render_template, make_response
 
 import atlas
+
+MESSAGE_DIRECTORY = "/var/iridium/300234063909200"
 
 
 app = Flask(__name__)
@@ -12,7 +15,7 @@ app = Flask(__name__)
 
 @app.route("/")
 def atlas_status():
-    values = atlas.get_messages("/var/iridium/300234063909200")[-1]
+    values = atlas.get_messages(MESSAGE_DIRECTORY)[-1]
     last_image_filename = os.path.basename(
             sorted(glob.glob("/home/iridiumcam/StarDot/ATLAS_CAM/*.jpg"))[-1])
     values["last_image_src"] = "http://iridiumcam.lidar.io/ATLAS_CAM/" + \
@@ -21,6 +24,16 @@ def atlas_status():
             os.path.splitext(last_image_filename)[0],
             "ATLAS_CAM_%Y%m%d_%H%M%S")
     return render_template("atlas_status.html", **values)
+
+
+@app.route("/data.csv")
+def atlas_data():
+    output = StringIO.StringIO()
+    atlas.write_data(MESSAGE_DIRECTORY, output)
+    response = make_response(output.getvalue())
+    response.headers["Content-Disposition"] = "attachment; filename=data.csv"
+    response.headers["Content-type"] = "text/csv"
+    return response
 
 
 if __name__ == "__main__":
