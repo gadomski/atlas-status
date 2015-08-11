@@ -1,4 +1,5 @@
 from collections import defaultdict
+import csv
 import datetime
 import os
 
@@ -91,12 +92,15 @@ def get_messages(directory):
     return messages
 
 
-if __name__ == "__main__":
-    import csv
-    import sys
-    messages = get_messages("/var/iridium/300234063909200")
+def write_data(directory, filelike):
+    messages = get_messages(directory)
     fieldnames = ["last_heartbeat_datetime"] + PAYLOAD_NAMES
-    writer = csv.DictWriter(sys.stdout, fieldnames=fieldnames)
-    writer.writeheader()
+    filelike.write(",".join(fieldnames) + "\n")
+    writer = csv.DictWriter(filelike, fieldnames=fieldnames)
     for message in messages:
         writer.writerow(message)
+
+
+if __name__ == "__main__":
+    import sys
+    write_data("/var/iridium/300234063909200", sys.stdout)
