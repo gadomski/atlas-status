@@ -57,7 +57,12 @@
         </div>
 
         <div class="col-md-6">
-          <img src="{{ last_image_src }}" class="img-responsive" alt="Latest ATLAS image">
+          <div class="thumbnail">
+            <img src="{{ last_image_src }}" class="img-responsive" alt="Latest ATLAS image">
+            <div class="caption">
+              <p>Image taken at {{ last_image_datetime }} UTC</p>
+            </div>
+          </div>
         </div>
 
       </div>

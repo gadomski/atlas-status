@@ -17,6 +17,9 @@ def atlas_status():
             sorted(glob.glob("/home/iridiumcam/StarDot/ATLAS_CAM/*.jpg"))[-1])
     values["last_image_src"] = "http://iridiumcam.lidar.io/ATLAS_CAM/" + \
             last_image_filename
+    values["last_image_datetime"] = datetime.datetime.strptime(
+            os.path.splitext(last_image_filename)[0],
+            "ATLAS_CAM_%Y%m%d_%H%M%S")
     return render_template("atlas_status.html", **values)
 
 
