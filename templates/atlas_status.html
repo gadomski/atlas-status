@@ -46,6 +46,14 @@
             <dt>Humidity</dt>
             <dd>{{ "%.1f%%" | format(scan_params_humidity) }}</dd>
           </dl>
+
+          <h3>Power at last heartbeat</h3>
+          <dl class="dl-horizontal">
+            <dt>Battery #1</dt>
+            <dd>{{ "%d%%" | format(soc1 * 100 / 5.0) }}</dd>
+            <dt>Battery #2</dt>
+            <dd>{{ "%d%%" | format(soc2 * 100 / 5.0) }}</dd>
+          </dl>
         </div>
 
         <div class="col-md-6">
