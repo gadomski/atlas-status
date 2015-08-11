@@ -92,4 +92,11 @@ def get_messages(directory):
 
 
 if __name__ == "__main__":
-    print get_messages("/var/iridium/300234063909200")
+    import csv
+    import sys
+    messages = get_messages("/var/iridium/300234063909200")
+    fieldnames = ["last_heartbeat_datetime"] + PAYLOAD_NAMES
+    writer = csv.DictWriter(sys.stdout, fieldnames=fieldnames)
+    writer.writeheader()
+    for message in messages:
+        writer.writerow(message)
