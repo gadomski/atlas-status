@@ -14,14 +14,17 @@ app.config["IMAGE_DIRECTORY"] = "/home/iridiumcam/StarDot/ATLAS_CAM"
 
 @app.route("/")
 def atlas_status():
-    values = atlas.get_messages(app.config["MESSAGE_DIRECTORY"])[-1]
+    messages = atlas.get_messages(app.config["MESSAGE_DIRECTORY"])
+    values = messages[-1]
+
     image_glob = os.path.join(app.config["IMAGE_DIRECTORY"], "*.jpg")
     last_image_filename = os.path.basename(sorted(glob.glob(image_glob))[-1])
     values["last_image_src"] = "http://iridiumcam.lidar.io/ATLAS_CAM/" + \
             last_image_filename
     values["last_image_datetime"] = datetime.datetime.strptime(
-            os.path.splitext(last_image_filename)[0],
-            "ATLAS_CAM_%Y%m%d_%H%M%S")
+        os.path.splitext(last_image_filename)[0],
+        "ATLAS_CAM_%Y%m%d_%H%M%S")
+
     return render_template("atlas_status.html", **values)
 
 
