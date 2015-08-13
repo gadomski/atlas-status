@@ -72,12 +72,16 @@
 
     <div class="container">
       <h3>Battery charge</h3>
-
       <div id="battery-chart"></div>
 
       <h3>Temperature</h3>
-
       <div id="temperature-chart"></div>
+
+      <h3>Pressure</h3>
+      <div id="pressure-chart"></div>
+
+      <h3>Relative humidity</h3>
+      <div id="humidity-chart"></div>
     </div>
 
     <!-- d3.js and c3.js for visualization -->
@@ -94,7 +98,7 @@
             "Battery 2": d.soc2 / 5.0,
             "Temperature": d.scan_params_temperature,
             "Temperature inside scanner mount": d.tempmount,
-            "Relative humidity": d.scan_params_humidity,
+            "Relative humidity": d.scan_params_humidity / 100.0,
             "Pressure": d.scan_params_pressure
           };
         })
@@ -160,6 +164,65 @@
             format: {
               title: function(d) { return d3.time.format("%Y-%m-%d %H:%M:%S")(d); },
               value: function(d) { return d3.format(".1f")(d) + "°C"; }
+            }
+          }
+        });
+
+        c3.generate({
+          bindto: "#pressure-chart",
+          data: {
+            json: data,
+            keys: {
+              value: ["Pressure"],
+              x: "Heartbeat"
+            }
+          },
+          axis: {
+            x: {
+              type: "timeseries",
+              tick: {
+                count: 20,
+                format: "%Y-%m-%d"
+              }
+            },
+            y: {
+              label: "Pressure (mBar)"
+            }
+          },
+          tooltip: {
+            format: {
+              title: function(d) { return d3.time.format("%Y-%m-%d %H:%M:%S")(d); }
+            }
+          }
+        });
+
+        c3.generate({
+          bindto: "#humidity-chart",
+          data: {
+            json: data,
+            keys: {
+              value: ["Relative humidity"],
+              x: "Heartbeat"
+            }
+          },
+          axis: {
+            x: {
+              type: "timeseries",
+              tick: {
+                count: 20,
+                format: "%Y-%m-%d"
+              }
+            },
+            y: {
+              label: "Relative humidity",
+              tick: {
+                format: d3.format("%")
+              }
+            }
+          },
+          tooltip: {
+            format: {
+              title: function(d) { return d3.time.format("%Y-%m-%d %H:%M:%S")(d); }
             }
           }
         });
