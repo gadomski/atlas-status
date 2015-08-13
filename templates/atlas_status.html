@@ -73,7 +73,11 @@
     <div class="container">
       <h3>Battery charge</h3>
 
-      <div id="chart"></div>
+      <div id="battery-chart"></div>
+
+      <h3>Temperature</h3>
+
+      <div id="temperature-chart"></div>
     </div>
 
     <!-- d3.js and c3.js for visualization -->
@@ -84,13 +88,21 @@
     <script>
       queue()
         .defer(d3.csv, "/data.csv", function(d) { 
-          return {"Battery 1": d.soc1 / 5.0, "Battery 2": d.soc2 / 5.0, "Heartbeat": new Date(d.last_heartbeat_datetime)};
+          return {
+            "Heartbeat": new Date(d.last_heartbeat_datetime),
+            "Battery 1": d.soc1 / 5.0,
+            "Battery 2": d.soc2 / 5.0,
+            "Temperature": d.scan_params_temperature,
+            "Temperature inside scanner mount": d.tempmount,
+            "Relative humidity": d.scan_params_humidity,
+            "Pressure": d.scan_params_pressure
+          };
         })
         .await(ready);
 
       function ready(error, data) {
-        var chart = c3.generate({
-          bindto: "#chart",
+        c3.generate({
+          bindto: "#battery-chart",
           data: {
             json: data,
             keys: {
@@ -116,6 +128,38 @@
           tooltip: {
             format: {
               title: function(d) { return d3.time.format("%Y-%m-%d %H:%M:%S")(d); }
+            }
+          }
+        });
+
+        c3.generate({
+          bindto: "#temperature-chart",
+          data: {
+            json: data,
+            keys: {
+              value: ["Temperature", "Temperature inside scanner mount"],
+              x: "Heartbeat"
+            }
+          },
+          axis: {
+            x: {
+              type: "timeseries",
+              tick: {
+                count: 20,
+                format: "%Y-%m-%d"
+              }
+            },
+            y: {
+              label: "Temperature",
+              tick: {
+                format: function(d) { return d3.format(".0f")(d) + "°C"; }
+              }
+            }
+          },
+          tooltip: {
+            format: {
+              title: function(d) { return d3.time.format("%Y-%m-%d %H:%M:%S")(d); },
+              value: function(d) { return d3.format(".1f")(d) + "°C"; }
             }
           }
         });
