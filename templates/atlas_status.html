@@ -93,7 +93,7 @@
       queue()
         .defer(d3.csv, "/data.csv", function(d) { 
           return {
-            "Heartbeat": new Date(d.last_heartbeat_datetime),
+            "Heartbeat": d3.time.format("%Y-%m-%d %H:%M:%S").parse(d.last_heartbeat_datetime),
             "Battery 1": d.soc1 / 5.0,
             "Battery 2": d.soc2 / 5.0,
             "Temperature": d.scan_params_temperature,
